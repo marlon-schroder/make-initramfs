@@ -1,0 +1,42 @@
+#!/bin/sh
+
+export PATH="/bin:/sbin"
+
+mkdir /sys /proc /run /newroot
+
+mount -t sysfs sysfs /sys
+mount -t proc proc /proc
+#echo 1 > /proc/sys/kernel/printk
+mount -t devtmpfs tmpfs /dev
+#mount -t tmpfs tmpfs /run
+
+modprobe -ab $(cat /etc/modules) 2>/dev/null
+
+#find /sys/devices -name modalias -type f -print0 | xargs -0 sort -u | \
+#	xargs /sbin/modprobe -ab 2>/dev/null
+
+cmdline() {
+	local value
+	value=" $(cat /proc/cmdline) "
+	value="${value##* ${1}=}"
+	value="${value%% *}"
+	[ "${value}" != "" ] && echo "${value}"
+}
+
+#modules=$(cmdline modules)
+#modprobe -ab ${modules//,/ }
+
+##A0
+##A1
+##A2
+##A3
+
+mount -o ro $(findfs $(cmdline root)) /newroot
+
+mount --move /sys /newroot/sys
+mount --move /proc /newroot/proc
+mount --move /dev /newroot/dev
+#mount --move /run /newroot/run
+#test -d /mnt && mount --move /mnt /newroot/home
+
+exec switch_root /newroot /sbin/init
