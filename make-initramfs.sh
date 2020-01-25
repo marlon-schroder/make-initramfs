@@ -22,14 +22,14 @@ mkinitramfs() {
 	local device=$4
 	local dest=$6
 
-	version=$(ls $base/lib/modules|grep 5.)
+	kernel_version=$(uname -r)
 	temp="$(mktemp -d)"
 	initramfs="$temp/initramfs"
+	mkdir $initramfs
 
 	#############
 	## BUSYBOX ##
 	#############
-	mkdir $initramfs
 
 	if [ ! -x $busybox/initramfs/bin/busybox ]; then
 		wget https://busybox.net/downloads/${busybox}.tar.bz2
@@ -62,7 +62,7 @@ mkinitramfs() {
 	#############
 	## MODULES ##
 	#############
-	mkdir -p $initramfs/lib/modules/${version}
+	mkdir -p $initramfs/lib/modules/${kernel_version}
 
 	# DETECT THE MODULES FOR YOUR PC
 	devices=$(find /sys/devices -name modalias -type f -print0 | xargs -0 sort -u)
@@ -77,9 +77,9 @@ mkinitramfs() {
 	fstype=$(blkid -o value -s TYPE $device)
 
 	for i in $fstype; do
-        dependencies=$(cat /lib/modules/${version}/modules.dep|grep "/$i\."|sed s'/://')
+        dependencies=$(cat /lib/modules/${kernel_version}/modules.dep|grep "/$i\."|sed s'/://')
         for d in $dependencies; do
-            cp --parents /lib/modules/${version}/$d $initramfs
+            cp --parents /lib/modules/${kernel_version}/$d $initramfs
         done
     done
 
@@ -91,9 +91,9 @@ mkinitramfs() {
 	done
 
 	# Make the depmod for modprobe
-	touch $initramfs/lib/modules/${version}/modules.order
-	touch $initramfs/lib/modules/${version}/modules.builtin
-	depmod -b $initramfs -a $version
+	touch $initramfs/lib/modules/${kernel_version}/modules.order
+	touch $initramfs/lib/modules/${kernel_version}/modules.builtin
+	depmod -b $initramfs -a $kernel_version
 
 	###########
 	## CLOSE ##
