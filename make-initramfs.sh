@@ -17,13 +17,6 @@ EOF
 exit 1
 }
 
-if [ ! -x $busybox/initramfs/bin/busybox ]; then
-	wget https://busybox.net/downloads/${busybox}.tar.bz2
-	tar	xpfj ${busybox}.tar.bz2
-	cp -rfp .config ${busybox}/.config
-	cd ${busybox} && make && make install
-fi
-
 mkinitramfs() {
 	local base=$2
 	local device=$4
@@ -37,7 +30,16 @@ mkinitramfs() {
 	## BUSYBOX ##
 	#############
 	mkdir $initramfs
+
+	if [ ! -x $busybox/initramfs/bin/busybox ]; then
+		wget https://busybox.net/downloads/${busybox}.tar.bz2
+		tar xpfj ${busybox}.tar.bz2
+		cp -rfp .config ${busybox}/.config
+		cd ${busybox} && make && make install
+	fi
+
 	[ ! -d $busybox/initramfs ] && echo "WHITHOUT BUSYBOX, COMPILE IT" && exit 0
+
 	cp -rfp $busybox/initramfs/* $initramfs
 
 	##########
