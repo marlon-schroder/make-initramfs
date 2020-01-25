@@ -2,7 +2,6 @@
 
 [ $(id -u) -ne 0 ] && echo "Please run as root" && exit 1
 
-path_ini=$(pwd)
 busybox='busybox-1.31.1'
 
 use() {
@@ -17,6 +16,8 @@ Use: ./mkinitramfs.sh -b /mnt -i /dev/sda7 OR -i /home/root.img -d /boot/iniramf
 EOF
 exit 1
 }
+
+path_ini=$(pwd)
 
 mkinitramfs() {
 	local base=$2
