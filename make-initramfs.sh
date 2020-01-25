@@ -8,11 +8,12 @@ busybox='busybox-1.31.1'
 use() {
 cat << EOF
 
-Use: ./mkinitramfs.sh -b /mnt -i /dev/sda7 OR /home/root.img -d /boot/iniramfs
+Use: ./mkinitramfs.sh -b /mnt -i /dev/sda7 OR -i /home/root.img -d /boot/iniramfs
 
 	-b / OR /chroot			Use the base dir for copy modules
 	-i /root/root.img		The device file system OR root image file
 	-d /boot/initramfs		Dest of initramfs
+
 EOF
 exit 1
 }
