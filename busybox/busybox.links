@@ -1,0 +1,10 @@
+/bin/cat
+/bin/mkdir
+/bin/sleep
+/sbin/modprobe
+/bin/hush
+/bin/sh
+/sbin/findfs
+/sbin/losetup
+/bin/mount
+/sbin/switch_root
