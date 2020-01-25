@@ -3,6 +3,7 @@
 [ $(id -u) -ne 0 ] && echo "Please run as root" && exit 1
 
 path_ini=$(pwd)
+busybox='busybox-1.31.1'
 
 use() {
 cat << EOF
@@ -15,6 +16,13 @@ Use: ./mkinitramfs.sh -b /mnt -i /dev/sda7 OR /home/root.img -d /boot/iniramfs
 EOF
 exit 1
 }
+
+if [ ! -x $busybox/initramfs/bin/busybox ]; then
+	wget https://busybox.net/downloads/${busybox}.tar.bz2
+	tar	xpfj ${busybox}.tar.bz2
+	cp -rfp .config ${busybox}/.config
+	cd ${busybox} && make && make install
+fi
 
 mkinitramfs() {
 	local base=$2
@@ -29,8 +37,8 @@ mkinitramfs() {
 	## BUSYBOX ##
 	#############
 	mkdir $initramfs
-	[ ! -d ./busybox/initramfs ] && echo "WHITHOUT BUSYBOX, COMPILE IT" && exit 0
-	cp -rfp ./busybox/initramfs/* $initramfs
+	[ ! -d $busybox/initramfs ] && echo "WHITHOUT BUSYBOX, COMPILE IT" && exit 0
+	cp -rfp $busybox/initramfs/* $initramfs
 
 	##########
 	## INIT ##
